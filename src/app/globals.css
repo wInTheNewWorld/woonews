@@ -65,12 +65,33 @@ header.page-header {
   padding-bottom: 1.2rem;
   border-bottom: 1px solid var(--rule);
 }
+.date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
 .header-date {
   font-size: 0.75rem;
   color: var(--ink-faint);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  min-width: 160px;
+  text-align: center;
 }
+.date-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+.date-nav-btn:hover:not(.disabled) { color: var(--ink); background: var(--rule); }
+.date-nav-btn.disabled { color: var(--ink-ghost); cursor: default; }
 
 /* ── Topic Card ── */
 .topic-list { }
