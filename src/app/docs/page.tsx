@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { PersonaCard } from '../components/PersonaCard';
 import { PersonaAutoOpen } from '../components/PersonaAutoOpen';
+import { Logo } from '../components/Logo';
 
 function getSoulFile(filename: string): string {
   try {
@@ -12,7 +13,7 @@ function getSoulFile(filename: string): string {
 function Nav() {
   return (
     <nav className="site-nav">
-      <a href="/" className="nav-brand">WooNews</a>
+      <a href="/" className="nav-brand"><Logo /></a>
       <ul className="nav-links">
         <li><a href="/">阿根廷情报</a></li>
         <li><a href="/docs">文档</a></li>

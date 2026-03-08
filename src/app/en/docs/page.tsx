@@ -1,3 +1,4 @@
+import { Logo } from '../../components/Logo';
 import fs from 'fs';
 import path from 'path';
 

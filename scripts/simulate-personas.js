@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * simulate-personas.js
+ * 逻辑：以人物为单位，一次性看完今天所有话题，自主决定对哪几条有反应
+ */
+
 const Database = require('better-sqlite3');
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -7,202 +12,159 @@ const path = require('path');
 const db = new Database(path.join(__dirname, '../db/woonews.db'));
 const TODAY = new Date().toISOString().slice(0, 10);
 const CLAUDE = '/Users/aiwoody/.nvm/versions/node/v22.19.0/bin/claude';
-const SOULS_DIR = path.join(__dirname, '../souls');
-
-// 加载灵魂文件
-function loadSoul(filename) {
-  const filepath = path.join(SOULS_DIR, filename);
-  return fs.existsSync(filepath) ? fs.readFileSync(filepath, 'utf8') : null;
-}
 
 const PERSONAS = {
-  carlos: {
-    soulFile: 'carlos-mendoza.md',
-    name: 'Carlos',
-    triggerKeywords: ['政治', '政府', '经济', '比索', '汇率', '选举', '腐败', '通胀', '退休金', '工资', '税收'],
-  },
-  maria: {
-    soulFile: 'maria-gonzalez.md',
-    name: 'María',
-    triggerKeywords: ['医疗', '工会', '预算', '削减', '罢工', '退休金', '公共', '社会', 'Milei', '私有化', '护士', '医院'],
-  },
-  facundo: {
-    soulFile: 'facundo-ramos.md',
-    name: 'Facundo',
-    triggerKeywords: ['自由市场', '改革', '美元', '加密', '科技', '创业', '效率', '通胀', 'libertad', '减税', '补贴', '国有'],
-  },
-  valentina: {
-    soulFile: 'valentina-torres.md',
-    name: 'Valentina',
-    triggerKeywords: ['文化', '年轻人', '社交媒体', '大学', '女权', '气候', '音乐', '移民', 'UBA', '游行', '艺术'],
-  },
-  hector: {
-    soulFile: 'hector-villanueva.md',
-    name: 'Don Héctor',
-    triggerKeywords: ['历史', '教育', '退休金', '老年', '庇隆', '民主', '军政府', '记忆', '传统', '学校', '养老'],
-  },
-  lucia: {
-    soulFile: 'lucia-kim.md',
-    name: 'Lucía',
-    triggerKeywords: ['进口', '海关', '汇率', '贸易', '商业', '外汇', '关税', '生意', '物价', '供应链', '市场'],
-  },
-  rodrigo: {
-    soulFile: 'rodrigo-benitez.md',
-    name: 'Rodrigo',
-    triggerKeywords: ['外卖', '平台', '工人', '工资', '贫困', '住房', '安全', '交通', '年轻人', '就业', '非正规'],
-  },
+  carlos:    { name: 'Carlos Mendoza',           soulFile: 'carlos-mendoza.md' },
+  maria:     { name: 'María González',           soulFile: 'maria-gonzalez.md' },
+  tincho:    { name: 'Martín "Tincho" Alderete', soulFile: 'martin-alderete.md' },
+  facundo:   { name: 'Facundo Ramos',            soulFile: 'facundo-ramos.md' },
+  valentina: { name: 'Valentina Torres',         soulFile: 'valentina-torres.md' },
+  hector:    { name: 'Héctor Villanueva',        soulFile: 'hector-villanueva.md' },
+  lucia:     { name: 'Lucía Kim',                soulFile: 'lucia-kim.md' },
+  rodrigo:   { name: 'Rodrigo Benítez',          soulFile: 'rodrigo-benitez.md' },
 };
 
+function loadSoul(filename) {
+  try {
+    return fs.readFileSync(path.join(__dirname, '../souls', filename), 'utf8');
+  } catch { return null; }
+}
+
 function callClaude(prompt) {
-  const tmpFile = `/tmp/soul_prompt_${Date.now()}.txt`;
+  const tmpFile = `/tmp/persona_${Date.now()}.txt`;
   fs.writeFileSync(tmpFile, prompt, 'utf8');
   try {
     const result = execSync(
-      `${CLAUDE} -p "$(cat ${tmpFile})" --dangerously-skip-permissions 2>/dev/null`,
-      { timeout: 60000, maxBuffer: 1024 * 1024 }
-    ).toString().trim();
-    fs.unlinkSync(tmpFile);
-    return result;
+      `${CLAUDE} -p "$(cat ${tmpFile})" --output-format text 2>/dev/null`,
+      { encoding: 'utf8', timeout: 120000, maxBuffer: 1024 * 1024 * 10 }
+    );
+    return result.trim();
   } catch (e) {
-    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
     return null;
+  } finally {
+    fs.unlinkSync(tmpFile);
   }
 }
 
-function selectPersonas(topic) {
-  const text = `${topic.title_zh || ''} ${topic.explanation || ''} ${topic.title_es || ''}`;
-  const scores = {};
-  for (const [key, persona] of Object.entries(PERSONAS)) {
-    scores[key] = persona.triggerKeywords.filter(kw => text.includes(kw)).length;
+/**
+ * 让一个人物看完今天所有话题，自主决定评论哪几条
+ * 返回: [{ topicIndex, zh, en }, ...]
+ */
+function generatePersonaComments(personaKey, soul, topics) {
+  const topicList = topics.map((t, i) =>
+    `[${i + 1}] ${t.title_zh || t.title_es}\n    ${t.explanation}`
+  ).join('\n\n');
+
+  const prompt = `
+以下是你的人物档案：
+
+${soul}
+
+---
+
+今天布宜诺斯艾利斯广场上有这几条新闻：
+
+${topicList}
+
+---
+
+请以真实的人的方式做出反应：
+
+1. 从上面的新闻里，选出你**真正有感觉**的1到3条。如果某条和你的生活、关心的事完全无关，就跳过它，不要硬挤评论。
+2. 对你选中的每条，写一段真实的发言。要求：
+   - 从新闻本身触发你的情绪，而不是表演你的身份标签
+   - 用一个你生活中的具体细节来回应，但每条评论只用一个不同的细节
+   - 语言自然，像在广场上随口说的，不是写文章
+   - 100-150字中文，可夹杂西语词汇
+3. 不同条目之间不要重复使用同样的个人经历或口头禅
+
+输出格式（严格按此格式，每条一个块）：
+TOPIC|||话题编号（数字）
+COMMENT_ZH|||中文评论
+COMMENT_EN|||English comment (natural, preserves voice, 80-120 words)
+---
+（如有多条，重复上述块，用---分隔）
+
+如果今天没有任何话题触动你，输出：SKIP
+`;
+
+  const raw = callClaude(prompt);
+  if (!raw || raw.includes('SKIP')) return [];
+
+  const blocks = raw.split(/\n?---\n?/).filter(b => b.includes('TOPIC|||'));
+  const results = [];
+
+  for (const block of blocks) {
+    const topicMatch = block.match(/TOPIC\|\|\|(\d+)/);
+    const zhMatch = block.match(/COMMENT_ZH\|\|\|([\s\S]*?)(?=COMMENT_EN\|\|\||$)/);
+    const enMatch = block.match(/COMMENT_EN\|\|\|([\s\S]*?)$/);
+
+    if (topicMatch && zhMatch) {
+      const idx = parseInt(topicMatch[1]) - 1;
+      if (idx >= 0 && idx < topics.length) {
+        results.push({
+          topicIndex: idx,
+          zh: zhMatch[1].trim(),
+          en: enMatch ? enMatch[1].trim() : null,
+        });
+      }
+    }
   }
-  return Object.entries(scores)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 2)
-    .map(([key]) => key);
-}
 
-async function generateComment(personaKey, topic, soulContent) {
-  const persona = PERSONAS[personaKey];
-  const prompt = `
-以下是你的完整人物灵魂档案，请完全进入这个角色：
-
-${soulContent}
-
----
-
-现在，针对以下新闻话题，用你的角色身份发表评论。
-
-**话题：** ${topic.title_zh || topic.title_es}
-**背景：** ${topic.explanation}
-
-请严格按以下格式输出，用三个竖线分隔，不要添加其他内容：
-
-COMMENT_ZH|||中文评论（100-150字，可夹杂西语俚语，必须有具体细节，禁止外交辞令）
-COMMENT_EN|||English version of the comment (natural translation that preserves the character's voice, emotion and specific details, 80-120 words)
-`;
-  const raw = callClaude(prompt);
-  if (!raw) return { zh: null, en: null };
-  
-  const zhMatch = raw.match(/COMMENT_ZH\|\|\|([\s\S]*?)(?=COMMENT_EN\|\|\||$)/);
-  const enMatch = raw.match(/COMMENT_EN\|\|\|([\s\S]*?)$/);
-  
-  return {
-    zh: zhMatch ? zhMatch[1].trim() : raw,
-    en: enMatch ? enMatch[1].trim() : null,
-  };
-}
-
-async function generateReply(replierKey, originalComment, topic, soulContent) {
-  const prompt = `
-以下是你的完整人物灵魂档案：
-
-${soulContent}
-
----
-
-针对以下评论，用你的角色身份进行回复：
-
-**原话题：** ${topic.title_zh || topic.title_es}
-**原评论：** ${originalComment}
-
-要求：与原评论形成真实对话张力，体现你的性格和偏见，禁止礼貌性回复。
-
-请严格按以下格式输出：
-
-REPLY_ZH|||中文回复（60-100字，可夹杂西语，有摩擦感）
-REPLY_EN|||English version (60-80 words, preserves character voice and friction)
-`;
-  const raw = callClaude(prompt);
-  if (!raw) return { zh: null, en: null };
-  
-  const zhMatch = raw.match(/REPLY_ZH\|\|\|([\s\S]*?)(?=REPLY_EN\|\|\||$)/);
-  const enMatch = raw.match(/REPLY_EN\|\|\|([\s\S]*?)$/);
-  
-  return {
-    zh: zhMatch ? zhMatch[1].trim() : raw,
-    en: enMatch ? enMatch[1].trim() : null,
-  };
+  return results;
 }
 
 async function main() {
-  const topics = db.prepare(`SELECT * FROM topics WHERE date = ? AND personas_done = 0`).all(TODAY);
-  console.log(`📋 待处理话题：${topics.length} 条`);
+  const topics = db.prepare(
+    `SELECT * FROM topics WHERE date = ? ORDER BY rowid`
+  ).all(TODAY);
 
-  for (const topic of topics) {
-    console.log(`\n🎭 话题：${topic.title_zh}`);
-
-    const selectedPersonas = selectPersonas(topic);
-    console.log(`   选中人物：${selectedPersonas.join(', ')}`);
-
-    let replyToId = null;
-    let firstComment = null;
-
-    for (let i = 0; i < selectedPersonas.length; i++) {
-      const personaKey = selectedPersonas[i];
-      const persona = PERSONAS[personaKey];
-      const soulContent = loadSoul(persona.soulFile);
-
-      if (!soulContent) {
-        console.log(`   ⚠️ 找不到灵魂文件：${persona.soulFile}`);
-        continue;
-      }
-
-      // 生成主评论
-      const result = await generateComment(personaKey, topic, soulContent);
-      if (!result.zh) continue;
-
-      const insertResult = db.prepare(
-        `INSERT INTO persona_comments (topic_id, date, persona, content, content_en, reply_to) VALUES (?, ?, ?, ?, ?, ?)`
-      ).run(topic.id, TODAY, personaKey, result.zh, result.en || null, null);
-
-      console.log(`   ✅ ${persona.name}: ${result.zh.slice(0, 50)}...`);
-
-      if (i === 0) {
-        firstComment = { id: insertResult.lastInsertRowid, content: result.zh };
-      }
-
-      // 第二个人物对第一个人物的评论进行回复
-      if (i === 1 && firstComment) {
-        const replierPersonas = Object.keys(PERSONAS).filter(k => k !== personaKey && k !== selectedPersonas[0]);
-        const replierKey = replierPersonas[Math.floor(Math.random() * replierPersonas.length)];
-        const replierSoul = loadSoul(PERSONAS[replierKey].soulFile);
-
-        if (replierSoul) {
-          const reply = await generateReply(replierKey, firstComment.content, topic, replierSoul);
-          if (reply && reply.zh) {
-            db.prepare(
-              `INSERT INTO persona_comments (topic_id, date, persona, content, content_en, reply_to) VALUES (?, ?, ?, ?, ?, ?)`
-            ).run(topic.id, TODAY, `${replierKey}_reply`, reply.zh, reply.en || null, firstComment.id);
-            console.log(`   💬 ${PERSONAS[replierKey].name} 回复: ${reply.zh.slice(0, 50)}...`);
-          }
-        }
-      }
-    }
-
-    db.prepare(`UPDATE topics SET personas_done = 1 WHERE id = ?`).run(topic.id);
+  if (!topics.length) {
+    console.log('❌ 今天没有话题数据');
+    process.exit(0);
   }
 
-  console.log('\n✅ 广场模拟完成');
+  console.log(`📋 今日话题：${topics.length} 条`);
+  console.log(`👥 开始广场模拟...\n`);
+
+  // 清空今天已有的评论（重新生成）
+  db.prepare(`DELETE FROM persona_comments WHERE date = ?`).run(TODAY);
+
+  // 以人物为单位，逐个生成
+  for (const [personaKey, persona] of Object.entries(PERSONAS)) {
+    const soul = loadSoul(persona.soulFile);
+    if (!soul) {
+      console.log(`⚠️  找不到灵魂文件：${persona.soulFile}`);
+      continue;
+    }
+
+    console.log(`🎭 ${persona.name} 走进广场...`);
+    const comments = generatePersonaComments(personaKey, soul, topics);
+
+    if (!comments.length) {
+      console.log(`   → 今天没有感兴趣的话题，沉默\n`);
+      continue;
+    }
+
+    for (const c of comments) {
+      const topic = topics[c.topicIndex];
+      db.prepare(
+        `INSERT INTO persona_comments (topic_id, date, persona, content, content_en, reply_to)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      ).run(topic.id, TODAY, personaKey, c.zh, c.en || null, null);
+      console.log(`   ✅ [话题${c.topicIndex + 1}] ${c.zh.slice(0, 50)}...`);
+    }
+    console.log();
+  }
+
+  // 更新 topics 的 personas_done 标记
+  db.prepare(`UPDATE topics SET personas_done = 1 WHERE date = ?`).run(TODAY);
+
+  // 统计
+  const total = db.prepare(
+    `SELECT count(*) as n FROM persona_comments WHERE date = ?`
+  ).get(TODAY);
+  console.log(`✅ 广场模拟完成，共 ${total.n} 条发言`);
 }
 
-main().catch(e => { console.error('❌', e.message); process.exit(1); });
+main().catch(e => { console.error(e); process.exit(1); });
