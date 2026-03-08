@@ -1,0 +1,176 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── CSS 变量 ── */
+:root {
+  --bg:           #0a0a0a;
+  --bg-card:      rgba(255,255,255,0.04);
+  --bg-impact:    rgba(255,255,255,0.05);
+  --bg-cultural:  rgba(255,255,255,0.03);
+  --bg-bubble:    rgba(255,255,255,0.06);
+  --bg-reply:     rgba(255,255,255,0.03);
+  --text-primary: #f5f5f7;
+  --text-sub:     #8e8e93;
+  --text-muted:   #636366;
+  --text-faint:   #48484a;
+  --text-ghost:   #3a3a3c;
+  --border:       rgba(255,255,255,0.06);
+  --border-source: #3a3a3c;
+  --shadow:       rgba(0,0,0,0.4);
+  --divider:      rgba(255,255,255,0.06);
+}
+
+[data-theme="light"] {
+  --bg:           #f2f2f7;
+  --bg-card:      #ffffff;
+  --bg-impact:    rgba(0,0,0,0.03);
+  --bg-cultural:  rgba(0,0,0,0.02);
+  --bg-bubble:    #f5f5f7;
+  --bg-reply:     #efefef;
+  --text-primary: #1d1d1f;
+  --text-sub:     #515154;
+  --text-muted:   #86868b;
+  --text-faint:   #aeaeb2;
+  --text-ghost:   #c7c7cc;
+  --border:       rgba(0,0,0,0.06);
+  --border-source: #d1d1d6;
+  --shadow:       rgba(0,0,0,0.08);
+  --divider:      rgba(0,0,0,0.06);
+}
+
+body {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.container { max-width: 720px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+
+/* ── Header ── */
+header { text-align: center; margin-bottom: 2.5rem; position: relative; }
+h1 { font-size: 2.8rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.3rem; }
+.header-tagline { font-size: 1rem; color: var(--text-sub); margin-top: 0.3rem; }
+.header-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; }
+.header-meta strong { color: var(--text-sub); font-weight: 600; }
+
+.theme-toggle {
+  position: absolute; top: 0; right: 0;
+  background: rgba(255,255,255,0.07); border: none; border-radius: 20px;
+  padding: 0.35rem 0.75rem; cursor: pointer;
+  font-size: 0.78rem; color: var(--text-muted);
+  transition: background 0.2s;
+}
+.theme-toggle:hover { background: var(--border); }
+
+/* ── 话题标题 ── */
+.topics-header {
+  font-size: 0.68rem; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;
+}
+
+/* ── 话题卡片 ── */
+.topic-card {
+  background: var(--bg-card);
+  border-radius: 18px;
+  border-left: 4px solid var(--text-ghost);
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.6rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.topic-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--shadow); }
+.topic-card.mood-negative { border-left-color: #ff453a; }
+.topic-card.mood-positive { border-left-color: #30d158; }
+.topic-card.mood-neutral  { border-left-color: var(--text-muted); }
+
+/* ── 카드 상단 ── */
+.card-top-row { display: flex; justify-content: flex-end; margin-bottom: 0.4rem; }
+.source-link {
+  font-size: 0.68rem; color: var(--text-faint);
+  text-decoration: none; padding: 0.18rem 0.5rem;
+  border: 1px solid var(--border-source); border-radius: 5px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.source-link:hover { color: var(--text-sub); border-color: var(--text-muted); }
+
+/* ── 新闻标题+解读 ── */
+.topic-title-zh {
+  font-size: 1.2rem; font-weight: 700; color: var(--text-primary);
+  line-height: 1.4; letter-spacing: -0.01em; margin-bottom: 0.35rem;
+}
+.topic-explanation { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ── 分割线 ── */
+.card-divider { border: none; border-top: 1px solid var(--divider); margin: 1rem 0; }
+
+/* ── 广场（默认展开，核心区域）── */
+.plaza { }
+.comment-thread { margin-bottom: 0.9rem; }
+
+.comment-bubble {
+  background: var(--bg-bubble);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.4rem;
+}
+.comment-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+.persona-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+}
+.avatar-middle_class { background: rgba(142,142,147,0.2); color: #8e8e93; }
+.avatar-kirchner     { background: rgba(255,69,58,0.15);  color: #ff453a; }
+.avatar-milei        { background: rgba(255,214,10,0.15); color: #b8940a; }
+.avatar-genz         { background: rgba(10,132,255,0.15); color: #0a84ff; }
+.avatar-middle_class_reply { background: rgba(142,142,147,0.15); color: #8e8e93; }
+.avatar-kirchner_reply     { background: rgba(255,69,58,0.12);   color: #ff453a; }
+.avatar-milei_reply        { background: rgba(255,214,10,0.12);  color: #b8940a; }
+.avatar-genz_reply         { background: rgba(10,132,255,0.12);  color: #0a84ff; }
+
+.comment-name { font-size: 0.72rem; font-weight: 600; color: var(--text-sub); }
+.comment-content { font-size: 0.875rem; color: var(--text-primary); line-height: 1.65; }
+
+.comment-reply-wrap {
+  margin-left: 1.8rem;
+  border-left: 2px solid var(--divider);
+  padding-left: 0.8rem;
+  margin-top: 0.3rem;
+}
+.comment-reply-bubble {
+  background: var(--bg-reply);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+}
+
+/* ── 카드 하단: 업무 제안 + 접기 ── */
+.card-bottom { margin-top: 1rem; }
+.topic-impact {
+  font-size: 0.82rem; color: var(--text-primary); line-height: 1.5;
+  padding: 0.5rem 0.8rem;
+  background: var(--bg-impact);
+  border-radius: 7px; border-left: 2px solid var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+.topic-impact::before { content: "→ "; color: var(--text-muted); }
+
+/* ── 折叠按钮 ── */
+.toggle-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.7rem; color: var(--text-faint); padding: 0;
+  margin-top: 0.5rem; display: inline-block;
+  transition: color 0.15s;
+}
+.toggle-btn:hover { color: var(--text-sub); }
+
+/* ── 文化背景 ── */
+.cultural-text {
+  font-size: 0.82rem; color: var(--text-sub); line-height: 1.7;
+  margin-top: 0.5rem; padding: 0.75rem 1rem;
+  background: var(--bg-cultural);
+  border-radius: 8px; border-left: 2px solid var(--text-faint);
+}
+
+.loading, .empty { text-align: center; padding: 6rem 0; color: var(--text-faint); font-size: 0.9rem; }
+footer { text-align: center; margin-top: 4rem; font-size: 0.72rem; color: var(--text-ghost); }
