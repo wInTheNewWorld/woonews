@@ -168,14 +168,17 @@ async function main() {
       }
 
       // 生成主评论
-      const insertResult = db.prepare(
-        `INSERT INTO persona_comments (topic_id, date, persona, content, reply_to) VALUES (?, ?, ?, ?, ?)`
-      ).run(topic.id, TODAY, personaKey, comment, null);
+      const result = await generateComment(personaKey, topic, soulContent);
+      if (!result.zh) continue;
 
-      console.log(`   ✅ ${persona.name}: ${comment.slice(0, 50)}...`);
+      const insertResult = db.prepare(
+        `INSERT INTO persona_comments (topic_id, date, persona, content, content_en, reply_to) VALUES (?, ?, ?, ?, ?, ?)`
+      ).run(topic.id, TODAY, personaKey, result.zh, result.en || null, null);
+
+      console.log(`   ✅ ${persona.name}: ${result.zh.slice(0, 50)}...`);
 
       if (i === 0) {
-        firstComment = { id: insertResult.lastInsertRowid, content: comment };
+        firstComment = { id: insertResult.lastInsertRowid, content: result.zh };
       }
 
       // 第二个人物对第一个人物的评论进行回复
@@ -186,11 +189,11 @@ async function main() {
 
         if (replierSoul) {
           const reply = await generateReply(replierKey, firstComment.content, topic, replierSoul);
-          if (reply) {
+          if (reply && reply.zh) {
             db.prepare(
-              `INSERT INTO persona_comments (topic_id, date, persona, content, reply_to) VALUES (?, ?, ?, ?, ?)`
-            ).run(topic.id, TODAY, `${replierKey}_reply`, reply, firstComment.id);
-            console.log(`   💬 ${PERSONAS[replierKey].name} 回复: ${reply.slice(0, 50)}...`);
+              `INSERT INTO persona_comments (topic_id, date, persona, content, content_en, reply_to) VALUES (?, ?, ?, ?, ?, ?)`
+            ).run(topic.id, TODAY, `${replierKey}_reply`, reply.zh, reply.en || null, firstComment.id);
+            console.log(`   💬 ${PERSONAS[replierKey].name} 回复: ${reply.zh.slice(0, 50)}...`);
           }
         }
       }

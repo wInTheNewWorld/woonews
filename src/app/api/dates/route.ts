@@ -13,5 +13,5 @@ export async function GET() {
     .order('date', { ascending: false });
 
   const dates = [...new Set((data || []).map(r => r.date))];
-  return NextResponse.json({ dates });
+  return NextResponse.json({ dates }, { headers: { "Cache-Control": "no-store" } });
 }

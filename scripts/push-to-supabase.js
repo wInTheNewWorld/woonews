@@ -31,11 +31,13 @@ async function run() {
   // 删除当天旧数据
   const existing = await req('GET', `topics?date=eq.${date}&select=id`);
   if (Array.isArray(existing) && existing.length > 0) {
-    const ids = existing.map(t => t.id);
-    for (const id of ids) {
-      await req('DELETE', `persona_comments?topic_id=eq.${id}`);
+    for (const t of existing) {
+      await req('DELETE', `persona_comments?topic_id=eq.${t.id}`);
     }
-    await req('DELETE', `topics?date=eq.${date}`);
+    // 逐条删除避免批量删除失败
+    for (const t of existing) {
+      await req('DELETE', `topics?id=eq.${t.id}`);
+    }
     console.log(`🗑️  清除旧数据 ${existing.length} 条`);
   }
 

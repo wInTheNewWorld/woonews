@@ -43,5 +43,5 @@ export async function GET(request: Request) {
       }))
   }));
 
-  return NextResponse.json({ date, lang, topics: topicsOut });
+  return NextResponse.json({ date, lang, topics: topicsOut }, { headers: { "Cache-Control": "no-store" } });
 }

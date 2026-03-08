@@ -10,6 +10,7 @@ interface Topic {
 interface DailyData { date: string; lang: string; topics: Topic[]; }
 
 const PERSONA: Record<string, { short: string }> = {
+  // 新 key
   carlos: { short: 'Carlos' }, maria: { short: 'María' },
   facundo: { short: 'Facundo' }, valentina: { short: 'Valentina' },
   hector: { short: 'Don Héctor' }, lucia: { short: 'Lucía' },
@@ -18,6 +19,11 @@ const PERSONA: Record<string, { short: string }> = {
   facundo_reply: { short: 'Facundo' }, valentina_reply: { short: 'Valentina' },
   hector_reply: { short: 'Don Héctor' }, lucia_reply: { short: 'Lucía' },
   rodrigo_reply: { short: 'Rodrigo' }, tincho_reply: { short: 'Tincho' },
+  // 旧 key 兼容
+  middle_class: { short: 'Carlos' }, genz: { short: 'Valentina' },
+  kirchner: { short: 'María' }, milei: { short: 'Facundo' },
+  retiree: { short: 'Don Héctor' }, immigrant: { short: 'Lucía' },
+  informal: { short: 'Rodrigo' }, techie: { short: 'Tincho' },
 };
 
 const UI: Record<string, Record<string, string>> = {
