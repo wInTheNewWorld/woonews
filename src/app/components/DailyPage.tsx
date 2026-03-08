@@ -81,8 +81,6 @@ function Plaza({ comments, t, lang }: { comments: Comment[], t: Record<string, s
             <div className="comment-main">
               <a
                 href={`${docsBase}#${docKey}`}
-                target="_blank"
-                rel="noopener noreferrer"
                 className={`comment-persona persona-${c.persona.replace('_reply','')} persona-link`}
               >{p.short}</a>
               <p className="comment-text">{c.content}</p>
@@ -91,8 +89,6 @@ function Plaza({ comments, t, lang }: { comments: Comment[], t: Record<string, s
               <div className="comment-reply">
                 <a
                   href={`${docsBase}#${replyDocKey}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className={`comment-persona persona-${reply.persona.replace('_reply','')} persona-link`}
                 >{rp.short}</a>
                 <p className="comment-text">{reply.content}</p>
