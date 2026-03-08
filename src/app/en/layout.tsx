@@ -1,3 +1,4 @@
+import { Logo } from '../components/Logo';
 export default function EnLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
