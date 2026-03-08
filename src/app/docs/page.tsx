@@ -10,6 +10,18 @@ function getSoulFile(filename: string): string {
   }
 }
 
+function Nav() {
+  return (
+    <nav className="site-nav">
+      <a href="/" className="nav-brand">WooNews</a>
+      <ul className="nav-links">
+        <li><a href="/">阿根廷情报</a></li>
+        <li><a href="/docs">文档</a></li>
+      </ul>
+    </nav>
+  );
+}
+
 export default function Docs() {
   const personas = [
     { key: 'carlos',    name: 'Carlos Mendoza',              label: '45岁 · 会计 · Boedo',              color: '#555',     soulFile: 'carlos-mendoza.md' },
@@ -28,7 +40,7 @@ export default function Docs() {
   }));
 
   return (
-    <main>
+    <><Nav /><main>
       <div className="container">
         <header className="docs-header">
           <h1 className="docs-title">关于 WooNews</h1>
@@ -97,6 +109,5 @@ export default function Docs() {
 
         <footer className="site-footer">WooNews · Built by WooWoo</footer>
       </div>
-    </main>
-  );
+    </main></>
 }

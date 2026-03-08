@@ -3,23 +3,36 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  // 只处理根路径和 /en 路径
-  if (pathname !== '/' && pathname !== '/en') return NextResponse.next();
-
   const acceptLang = request.headers.get('accept-language') || '';
   const isChinese = acceptLang.toLowerCase().includes('zh');
 
-  if (isChinese && pathname === '/en') {
-    return NextResponse.redirect(new URL('/', request.url));
+  // / → /en 或保持
+  if (pathname === '/') {
+    if (!isChinese) return NextResponse.redirect(new URL('/en', request.url));
+    return NextResponse.next();
   }
-  if (!isChinese && pathname === '/') {
-    return NextResponse.redirect(new URL('/en', request.url));
+
+  // /en → / 如果是中文用户
+  if (pathname === '/en') {
+    if (isChinese) return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.next();
+  }
+
+  // /docs → /en/docs 如果非中文
+  if (pathname === '/docs') {
+    if (!isChinese) return NextResponse.redirect(new URL('/en/docs', request.url));
+    return NextResponse.next();
+  }
+
+  // /en/docs → /docs 如果是中文
+  if (pathname === '/en/docs') {
+    if (isChinese) return NextResponse.redirect(new URL('/docs', request.url));
+    return NextResponse.next();
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/en'],
+  matcher: ['/', '/en', '/docs', '/en/docs'],
 };
