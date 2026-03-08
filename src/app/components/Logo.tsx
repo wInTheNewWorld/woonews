@@ -1,30 +1,28 @@
-export function Logo({ size = 26 }: { size?: number }) {
+export function Logo({ size = 24 }: { size?: number }) {
   return (
     <svg
-      width={size * 4}
+      width={size * 4.6}
       height={size}
-      viewBox="0 0 104 26"
+      viewBox="0 0 110 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: 'inline-block', verticalAlign: 'middle' }}
     >
       <text
-        x="0" y="21"
-        fontFamily="'Arial Black', 'Impact', sans-serif"
+        x="0" y="20"
+        fontFamily="'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
         fontWeight="900"
-        fontSize="24"
-        fill="#F5B820"
-        fontStyle="italic"
-        letterSpacing="-1"
+        fontSize="22"
+        fill="#E8A800"
+        letterSpacing="-0.5"
       >Woo</text>
       <text
-        x="52" y="21"
-        fontFamily="'Arial Black', 'Impact', sans-serif"
+        x="57" y="20"
+        fontFamily="'Arial Black', 'Impact', 'Haettenschweiler', sans-serif"
         fontWeight="900"
-        fontSize="24"
+        fontSize="22"
         fill="#1a1a1a"
-        fontStyle="italic"
-        letterSpacing="-1"
+        letterSpacing="-0.5"
       >News</text>
     </svg>
   );
