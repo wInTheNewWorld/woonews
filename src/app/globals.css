@@ -342,3 +342,16 @@ a.lang-switch:hover {
   color: var(--ink-muted) !important;
   border-color: var(--ink-faint);
 }
+
+/* Logo */
+.site-logo {
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  line-height: 1;
+  user-select: none;
+}
+.logo-woo  { color: #E8A800; }
+.logo-news { color: #111111; }
