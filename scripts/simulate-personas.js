@@ -19,22 +19,37 @@ const PERSONAS = {
   carlos: {
     soulFile: 'carlos-mendoza.md',
     name: 'Carlos',
-    triggerKeywords: ['政治', '政府', '经济', '比索', '汇率', '选举', '腐败', '通胀', '退休金', '工资'],
+    triggerKeywords: ['政治', '政府', '经济', '比索', '汇率', '选举', '腐败', '通胀', '退休金', '工资', '税收'],
   },
   maria: {
     soulFile: 'maria-gonzalez.md',
     name: 'María',
-    triggerKeywords: ['医疗', '工会', '预算', '削减', '罢工', '退休金', '公共', '社会', 'Milei', '私有化'],
+    triggerKeywords: ['医疗', '工会', '预算', '削减', '罢工', '退休金', '公共', '社会', 'Milei', '私有化', '护士', '医院'],
   },
   facundo: {
-    soulFile: 'martin-alderete.md', // Facundo 暂用 Martín 的框架，后续单独写
+    soulFile: 'facundo-ramos.md',
     name: 'Facundo',
-    triggerKeywords: ['自由市场', '改革', '美元', '加密', '科技', '创业', '效率', '通胀', 'libertad', '减税'],
+    triggerKeywords: ['自由市场', '改革', '美元', '加密', '科技', '创业', '效率', '通胀', 'libertad', '减税', '补贴', '国有'],
   },
   valentina: {
     soulFile: 'valentina-torres.md',
     name: 'Valentina',
-    triggerKeywords: ['文化', '年轻人', '社交媒体', '大学', '女权', '气候', '音乐', '移民', 'UBA', '游行'],
+    triggerKeywords: ['文化', '年轻人', '社交媒体', '大学', '女权', '气候', '音乐', '移民', 'UBA', '游行', '艺术'],
+  },
+  hector: {
+    soulFile: 'hector-villanueva.md',
+    name: 'Don Héctor',
+    triggerKeywords: ['历史', '教育', '退休金', '老年', '庇隆', '民主', '军政府', '记忆', '传统', '学校', '养老'],
+  },
+  lucia: {
+    soulFile: 'lucia-kim.md',
+    name: 'Lucía',
+    triggerKeywords: ['进口', '海关', '汇率', '贸易', '商业', '外汇', '关税', '生意', '物价', '供应链', '市场'],
+  },
+  rodrigo: {
+    soulFile: 'rodrigo-benitez.md',
+    name: 'Rodrigo',
+    triggerKeywords: ['外卖', '平台', '工人', '工资', '贫困', '住房', '安全', '交通', '年轻人', '就业', '非正规'],
   },
 };
 

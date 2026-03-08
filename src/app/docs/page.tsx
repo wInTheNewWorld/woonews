@@ -12,34 +12,14 @@ function getSoulFile(filename: string): string {
 
 export default function Docs() {
   const personas = [
-    {
-      key: 'carlos',
-      name: 'Carlos Mendoza',
-      label: '45岁 · 会计 · Boedo',
-      color: '#555',
-      soulFile: 'carlos-mendoza.md',
-    },
-    {
-      key: 'maria',
-      name: 'María González',
-      label: '52岁 · 公立医院护士 · Floresta',
-      color: '#c0392b',
-      soulFile: 'maria-gonzalez.md',
-    },
-    {
-      key: 'facundo',
-      name: 'Martín "Tincho" Alderete',
-      label: '29岁 · 远程工程师 · Villa Crespo',
-      color: '#b7860b',
-      soulFile: 'martin-alderete.md',
-    },
-    {
-      key: 'valentina',
-      name: 'Valentina Torres',
-      label: '22岁 · UBA传播学学生 · Almagro',
-      color: '#2980b9',
-      soulFile: 'valentina-torres.md',
-    },
+    { key: 'carlos',    name: 'Carlos Mendoza',              label: '45岁 · 会计 · Boedo',              color: '#555',     soulFile: 'carlos-mendoza.md' },
+    { key: 'maria',     name: 'María González',              label: '52岁 · 公立医院护士 · Floresta',    color: '#c0392b',  soulFile: 'maria-gonzalez.md' },
+    { key: 'tincho',    name: 'Martín "Tincho" Alderete',    label: '29岁 · 远程工程师 · Villa Crespo',  color: '#b7860b',  soulFile: 'martin-alderete.md' },
+    { key: 'facundo',   name: 'Facundo Ramos',               label: '28岁 · 自由派前端开发 · Belgrano',  color: '#e67e22',  soulFile: 'facundo-ramos.md' },
+    { key: 'valentina', name: 'Valentina Torres',            label: '22岁 · UBA传播学学生 · Almagro',    color: '#2980b9',  soulFile: 'valentina-torres.md' },
+    { key: 'hector',    name: 'Héctor Villanueva',           label: '68岁 · 退休教师 · Parque Patricios', color: '#7f8c8d', soulFile: 'hector-villanueva.md' },
+    { key: 'lucia',     name: 'Lucía Kim',                   label: '35岁 · 进口杂货店主 · Once',        color: '#8e44ad',  soulFile: 'lucia-kim.md' },
+    { key: 'rodrigo',   name: 'Rodrigo Benítez',             label: '19岁 · Rappi骑手 · Villa 31',       color: '#27ae60',  soulFile: 'rodrigo-benitez.md' },
   ];
 
   const soulsWithContent = personas.map(p => ({
