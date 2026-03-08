@@ -14,6 +14,7 @@ export default function Home() {
         <ul className="nav-links">
           <li><a href="/">阿根廷情报</a></li>
           <li><a href="/docs">文档</a></li>
+          <li><a href="/en" className="lang-switch">EN</a></li>
         </ul>
       </nav>
       <DailyPage lang="zh" />

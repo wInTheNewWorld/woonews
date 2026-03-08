@@ -327,3 +327,18 @@ a.persona-link:hover { opacity: 0.75; }
 .persona-card-identity { display: flex; flex-direction: column; gap: 0.2rem; }
 .persona-toggle-icon { font-size: 0.7rem; color: var(--ink-faint); flex-shrink: 0; }
 .persona-soul-content { padding-bottom: 1.2rem; }
+
+/* 语言切换按钮 */
+a.lang-switch {
+  font-size: 0.7rem !important;
+  color: var(--ink-faint) !important;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.15rem 0.45rem;
+  letter-spacing: 0.04em;
+  transition: color 0.15s, border-color 0.15s;
+}
+a.lang-switch:hover {
+  color: var(--ink-muted) !important;
+  border-color: var(--ink-faint);
+}

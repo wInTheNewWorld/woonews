@@ -14,6 +14,7 @@ export default function EnHome() {
         <ul className="nav-links">
           <li><a href="/en">Argentina Intel</a></li>
           <li><a href="/en/docs">Docs</a></li>
+          <li><a href="/" className="lang-switch">中文</a></li>
         </ul>
       </nav>
       <DailyPage lang="en" />
