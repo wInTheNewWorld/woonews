@@ -1,11 +1,12 @@
 export function Logo() {
   return (
     <span style={{
-      fontFamily: "'Arial Rounded MT Bold', 'Arial Black', 'Helvetica Neue', sans-serif",
-      fontWeight: 900,
-      fontSize: '1.25rem',
-      letterSpacing: '-0.02em',
+      fontFamily: "'Oswald', 'Arial Narrow', sans-serif",
+      fontWeight: 700,
+      fontSize: '1.35rem',
+      letterSpacing: '0.01em',
       lineHeight: 1,
+      textTransform: 'uppercase',
       userSelect: 'none',
     }}>
       <span style={{ color: '#E8A800' }}>Woo</span>

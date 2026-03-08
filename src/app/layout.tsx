@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { Oswald } from 'next/font/google';
+
+const oswald = Oswald({ subsets: ['latin'], weight: ['600', '700'] });
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -8,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh">
+    <html lang="zh" className={oswald.className}>
       <body>{children}</body>
     </html>
   );
