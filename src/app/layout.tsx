@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav className="site-nav">
           <a href="/" className="nav-brand">WooNews</a>
           <ul className="nav-links">
-            <li><a href="/">每日简报</a></li>
+            <li><a href="/">阿根廷情报</a></li>
             <li><a href="/docs">文档</a></li>
           </ul>
         </nav>
