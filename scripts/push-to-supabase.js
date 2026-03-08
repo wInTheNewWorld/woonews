@@ -45,10 +45,14 @@ async function run() {
   for (const t of topics) {
     const res = await req('POST', 'topics', {
       date: t.date, title_es: t.title_es, title_zh: t.title_zh,
-      explanation: t.explanation, heat: t.heat, mood: t.mood,
+      title_en: t.title_en,
+      explanation: t.explanation, explanation_en: t.explanation_en,
+      heat: t.heat, mood: t.mood,
       marketing: t.marketing, business_impact: t.business_impact,
-      cultural_context: t.cultural_context, sources: t.sources,
-      links: t.links, personas_triggered: t.personas_triggered,
+      cultural_context: t.cultural_context,
+      cultural_context_en: t.cultural_context_en,
+      sources: t.sources, links: t.links,
+      personas_triggered: t.personas_triggered,
       personas_done: t.personas_done
     });
     if (Array.isArray(res) && res[0]?.id) topicIdMap[t.id] = res[0].id;
@@ -60,7 +64,8 @@ async function run() {
     await req('POST', 'persona_comments', {
       topic_id: topicIdMap[c.topic_id],
       date: c.date, persona: c.persona,
-      content: c.content, reply_to: c.reply_to || null
+      content: c.content, content_en: c.content_en || null,
+      reply_to: c.reply_to || null
     });
   }
   console.log(`✅ comments: ${comments.length} 条`);

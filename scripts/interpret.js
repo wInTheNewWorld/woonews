@@ -1,78 +1,93 @@
+#!/usr/bin/env node
 const Database = require('better-sqlite3');
 const { execSync } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
-const db = new Database('db/woonews.db');
+const db = new Database(path.join(__dirname, '../db/woonews.db'));
+const TODAY = new Date().toISOString().slice(0, 10);
 const CLAUDE = '/Users/aiwoody/.nvm/versions/node/v22.19.0/bin/claude';
 
 function callClaude(prompt) {
   const tmp = `/tmp/interpret_${Date.now()}.txt`;
-  fs.writeFileSync(tmp, prompt);
+  fs.writeFileSync(tmp, prompt, 'utf8');
   try {
-    const out = execSync(`${CLAUDE} --dangerously-skip-permissions -p "$(cat ${tmp})"`,
-      { timeout: 30000, encoding: 'utf8' }).trim();
+    const out = execSync(
+      `${CLAUDE} -p "$(cat ${tmp})" --dangerously-skip-permissions 2>/dev/null`,
+      { timeout: 120000, maxBuffer: 4 * 1024 * 1024 }
+    ).toString().trim();
     fs.unlinkSync(tmp);
     return out;
-  } catch(e) { try { fs.unlinkSync(tmp); } catch {} throw e; }
+  } catch(e) {
+    if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
+    return null;
+  }
 }
 
-function interpretOne(topic) {
-  const prompt = `你是专注阿根廷市场的出海顾问，深度了解阿根廷历史文化。
-目标受众是「计划在阿根廷做出海业务的中国操盘手」。
-
-对以下新闻原文进行解读，严格按格式输出6行，每行用|||分隔字段名和值：
-
-新闻原文：${topic.title_es}
-
-输出格式（每行严格一个字段，不要多余内容）：
-title_zh|||中文标题10字以内
-explanation|||一句话解释20字以内
-mood|||只能是Positive或Neutral或Negative
-marketing|||只能是Avoid或Neutral或Opportunity
-business_impact|||出海建议25字以内
-cultural_context|||为什么这话题在阿根廷有特殊重量，背后文化历史根源，帮中国人理解当地情绪，50-80字`;
-
-  const out = callClaude(prompt);
-  const result = { id: topic.id };
-  for (const line of out.split('\n')) {
-    const idx = line.indexOf('|||');
-    if (idx > 0) {
-      const key = line.slice(0, idx).trim();
-      const val = line.slice(idx + 3).trim();
-      result[key] = val;
-    }
+function parseDelimited(text, fields) {
+  const result = {};
+  for (const field of fields) {
+    const match = text.match(new RegExp(`${field}:::([\\s\\S]*?)(?=\\n[A-Z_]+:::|$)`));
+    result[field] = match ? match[1].trim() : '';
   }
   return result;
 }
 
 async function main() {
-  const latest = db.prepare("SELECT DISTINCT date FROM topics ORDER BY date DESC LIMIT 1").get();
-  if (!latest) { console.log('无数据'); return; }
-
-  const topics = db.prepare("SELECT * FROM topics WHERE date=?").all(latest.date);
-  console.log(`🧠 解读 ${topics.length} 条话题 (${latest.date})...`);
-
-  const update = db.prepare(`UPDATE topics SET title_zh=?, explanation=?, mood=?, marketing=?, business_impact=?, cultural_context=? WHERE id=?`);
+  const topics = db.prepare(`SELECT * FROM topics WHERE date = ? AND (title_zh IS NULL OR title_zh = '')`).all(TODAY);
+  console.log(`📋 待解读话题：${topics.length} 条`);
 
   for (const topic of topics) {
-    try {
-      const r = interpretOne(topic);
-      update.run(
-        r.title_zh || topic.title_es.slice(0,15),
-        r.explanation || null,
-        r.mood || 'Neutral',
-        r.marketing || 'Neutral',
-        r.business_impact || null,
-        r.cultural_context || null,
-        topic.id
-      );
-      console.log(`  ✓ [${r.mood}] ${r.title_zh}`);
-      if (r.cultural_context) console.log(`     🏛️ ${r.cultural_context.slice(0,50)}...`);
-    } catch(e) {
-      console.error(`  ✗ ${e.message}`);
-    }
+    console.log(`\n🔍 解读：${topic.title_es}`);
+
+    const prompt = `你是一位深度了解阿根廷的分析师，同时精通中文和英文。
+
+请对以下阿根廷新闻话题进行解读，同时用中文和英文输出。
+
+话题标题（西班牙语）：${topic.title_es}
+相关原始信号：${topic.sources || '无'}
+
+请严格按以下格式输出，每个字段用三个冒号分隔，不要添加任何其他内容：
+
+TITLE_ZH:::15字以内的中文标题，简洁有力
+TITLE_EN:::English title, max 10 words, punchy
+EXPLANATION_ZH:::一句话中文解读，说清楚发生了什么，60字以内
+EXPLANATION_EN:::One sentence English explanation, max 50 words, what happened and why it matters
+MOOD:::只能是 positive、negative 或 neutral 之一
+HEAT:::只能是 High、Medium 或 Low 之一
+CULTURAL_CONTEXT_ZH:::50-80字，解释这件事在阿根廷文化语境下为什么重要
+CULTURAL_CONTEXT_EN:::50-80 words, explain why this matters in Argentine cultural context`;
+
+    const raw = callClaude(prompt);
+    if (!raw) { console.log('   ⚠️ Claude 无响应'); continue; }
+
+    const fields = ['TITLE_ZH','TITLE_EN','EXPLANATION_ZH','EXPLANATION_EN','MOOD','HEAT','CULTURAL_CONTEXT_ZH','CULTURAL_CONTEXT_EN'];
+    const parsed = parseDelimited(raw, fields);
+
+    db.prepare(`
+      UPDATE topics SET
+        title_zh = ?,
+        title_en = ?,
+        explanation = ?,
+        explanation_en = ?,
+        mood = ?,
+        heat = ?,
+        cultural_context = ?,
+        cultural_context_en = ?
+      WHERE id = ?
+    `).run(
+      parsed.TITLE_ZH, parsed.TITLE_EN,
+      parsed.EXPLANATION_ZH, parsed.EXPLANATION_EN,
+      parsed.MOOD || 'neutral', parsed.HEAT || 'Medium',
+      parsed.CULTURAL_CONTEXT_ZH, parsed.CULTURAL_CONTEXT_EN,
+      topic.id
+    );
+
+    console.log(`   ✅ ZH: ${parsed.TITLE_ZH}`);
+    console.log(`   ✅ EN: ${parsed.TITLE_EN}`);
   }
-  console.log('\n✅ 完成');
+
+  console.log('\n✅ 解读完成');
 }
 
-main().catch(console.error);
+main().catch(e => { console.error('❌', e.message); process.exit(1); });

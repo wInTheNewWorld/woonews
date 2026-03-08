@@ -90,19 +90,26 @@ ${soulContent}
 
 ---
 
-现在，针对以下新闻话题，用你的角色身份发表一条评论：
+现在，针对以下新闻话题，用你的角色身份发表评论。
 
 **话题：** ${topic.title_zh || topic.title_es}
 **背景：** ${topic.explanation}
 
-要求：
-- 完全按照灵魂档案中描述的说话方式
-- 必须包含至少一个具体细节（价格/地名/人名/气味）
-- 100-150字，西班牙语和中文混合（西语俚语+中文解释）
-- 禁止外交辞令，禁止平衡两方
-- 只输出评论本身，不要任何解释
+请严格按以下格式输出，用三个竖线分隔，不要添加其他内容：
+
+COMMENT_ZH|||中文评论（100-150字，可夹杂西语俚语，必须有具体细节，禁止外交辞令）
+COMMENT_EN|||English version of the comment (natural translation that preserves the character's voice, emotion and specific details, 80-120 words)
 `;
-  return callClaude(prompt);
+  const raw = callClaude(prompt);
+  if (!raw) return { zh: null, en: null };
+  
+  const zhMatch = raw.match(/COMMENT_ZH\|\|\|([\s\S]*?)(?=COMMENT_EN\|\|\||$)/);
+  const enMatch = raw.match(/COMMENT_EN\|\|\|([\s\S]*?)$/);
+  
+  return {
+    zh: zhMatch ? zhMatch[1].trim() : raw,
+    en: enMatch ? enMatch[1].trim() : null,
+  };
 }
 
 async function generateReply(replierKey, originalComment, topic, soulContent) {
@@ -118,14 +125,23 @@ ${soulContent}
 **原话题：** ${topic.title_zh || topic.title_es}
 **原评论：** ${originalComment}
 
-要求：
-- 与原评论形成真实的对话张力（可以同意、反驳、或从不同角度切入）
-- 必须体现你的角色性格和偏见
-- 60-100字，西班牙语和中文混合
-- 禁止礼貌性回复，要有摩擦感
-- 只输出回复本身，不要任何解释
+要求：与原评论形成真实对话张力，体现你的性格和偏见，禁止礼貌性回复。
+
+请严格按以下格式输出：
+
+REPLY_ZH|||中文回复（60-100字，可夹杂西语，有摩擦感）
+REPLY_EN|||English version (60-80 words, preserves character voice and friction)
 `;
-  return callClaude(prompt);
+  const raw = callClaude(prompt);
+  if (!raw) return { zh: null, en: null };
+  
+  const zhMatch = raw.match(/REPLY_ZH\|\|\|([\s\S]*?)(?=REPLY_EN\|\|\||$)/);
+  const enMatch = raw.match(/REPLY_EN\|\|\|([\s\S]*?)$/);
+  
+  return {
+    zh: zhMatch ? zhMatch[1].trim() : raw,
+    en: enMatch ? enMatch[1].trim() : null,
+  };
 }
 
 async function main() {
@@ -152,9 +168,6 @@ async function main() {
       }
 
       // 生成主评论
-      const comment = await generateComment(personaKey, topic, soulContent);
-      if (!comment) continue;
-
       const insertResult = db.prepare(
         `INSERT INTO persona_comments (topic_id, date, persona, content, reply_to) VALUES (?, ?, ?, ?, ?)`
       ).run(topic.id, TODAY, personaKey, comment, null);
