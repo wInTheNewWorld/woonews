@@ -40,7 +40,9 @@ export default function Docs() {
   }));
 
   return (
-    <><Nav /><main>
+    <>
+      <Nav />
+      <main>
       <div className="container">
         <header className="docs-header">
           <h1 className="docs-title">关于 WooNews</h1>
@@ -109,5 +111,7 @@ export default function Docs() {
 
         <footer className="site-footer">WooNews · Built by WooWoo</footer>
       </div>
-    </main></>
+    </main>
+  </>
+  );
 }
