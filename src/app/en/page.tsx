@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { DailyPage } from '../components/DailyPage';
+import { Logo } from '../components/Logo';
 
 export default function EnHome() {
   const [mounted, setMounted] = useState(false);
@@ -9,7 +10,7 @@ export default function EnHome() {
   return (
     <>
       <nav className="site-nav">
-        <a href="/en" className="nav-brand">WooNews</a>
+        <a href="/en" className="nav-brand"><Logo /></a>
         <ul className="nav-links">
           <li><a href="/en">Argentina Intel</a></li>
           <li><a href="/en/docs">Docs</a></li>
