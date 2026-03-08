@@ -1,176 +1,280 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── CSS 变量 ── */
 :root {
-  --bg:           #0a0a0a;
-  --bg-card:      rgba(255,255,255,0.04);
-  --bg-impact:    rgba(255,255,255,0.05);
-  --bg-cultural:  rgba(255,255,255,0.03);
-  --bg-bubble:    rgba(255,255,255,0.06);
-  --bg-reply:     rgba(255,255,255,0.03);
-  --text-primary: #f5f5f7;
-  --text-sub:     #8e8e93;
-  --text-muted:   #636366;
-  --text-faint:   #48484a;
-  --text-ghost:   #3a3a3c;
-  --border:       rgba(255,255,255,0.06);
-  --border-source: #3a3a3c;
-  --shadow:       rgba(0,0,0,0.4);
-  --divider:      rgba(255,255,255,0.06);
+  --bg:        #fafaf8;
+  --bg-dark:   #0a0a0a;
+  --ink:        #1a1a1a;
+  --ink-sub:    #4a4a4a;
+  --ink-muted:  #6b6b6b;
+  --ink-faint:  #a0a0a0;
+  --ink-ghost:  #d0d0d0;
+  --rule:       #e4e4e0;
+  --accent:     #1a1a1a;
 }
 
-[data-theme="light"] {
-  --bg:           #f2f2f7;
-  --bg-card:      #ffffff;
-  --bg-impact:    rgba(0,0,0,0.03);
-  --bg-cultural:  rgba(0,0,0,0.02);
-  --bg-bubble:    #f5f5f7;
-  --bg-reply:     #efefef;
-  --text-primary: #1d1d1f;
-  --text-sub:     #515154;
-  --text-muted:   #86868b;
-  --text-faint:   #aeaeb2;
-  --text-ghost:   #c7c7cc;
-  --border:       rgba(0,0,0,0.06);
-  --border-source: #d1d1d6;
-  --shadow:       rgba(0,0,0,0.08);
-  --divider:      rgba(0,0,0,0.06);
-}
+html { font-size: 16px; }
 
 body {
-  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   background: var(--bg);
-  min-height: 100vh;
-  color: var(--text-primary);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  transition: background 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
 }
 
-.container { max-width: 720px; margin: 0 auto; padding: 3rem 2rem 4rem; }
-
-/* ── Header ── */
-header { text-align: center; margin-bottom: 2.5rem; position: relative; }
-h1 { font-size: 2.8rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.3rem; }
-.header-tagline { font-size: 1rem; color: var(--text-sub); margin-top: 0.3rem; }
-.header-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; }
-.header-meta strong { color: var(--text-sub); font-weight: 600; }
-
-.theme-toggle {
-  position: absolute; top: 0; right: 0;
-  background: rgba(255,255,255,0.07); border: none; border-radius: 20px;
-  padding: 0.35rem 0.75rem; cursor: pointer;
-  font-size: 0.78rem; color: var(--text-muted);
-  transition: background 0.2s;
+/* ── Nav ── */
+.site-nav {
+  border-bottom: 1px solid var(--rule);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
 }
-.theme-toggle:hover { background: var(--border); }
-
-/* ── 话题标题 ── */
-.topics-header {
-  font-size: 0.68rem; color: var(--text-faint);
-  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;
+.nav-brand {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
 }
-
-/* ── 话题卡片 ── */
-.topic-card {
-  background: var(--bg-card);
-  border-radius: 18px;
-  border-left: 4px solid var(--text-ghost);
-  padding: 1.4rem 1.6rem;
-  margin-bottom: 1.6rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
 }
-.topic-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--shadow); }
-.topic-card.mood-negative { border-left-color: #ff453a; }
-.topic-card.mood-positive { border-left-color: #30d158; }
-.topic-card.mood-neutral  { border-left-color: var(--text-muted); }
-
-/* ── 카드 상단 ── */
-.card-top-row { display: flex; justify-content: flex-end; margin-bottom: 0.4rem; }
-.source-link {
-  font-size: 0.68rem; color: var(--text-faint);
-  text-decoration: none; padding: 0.18rem 0.5rem;
-  border: 1px solid var(--border-source); border-radius: 5px;
-  transition: color 0.15s, border-color 0.15s;
-}
-.source-link:hover { color: var(--text-sub); border-color: var(--text-muted); }
-
-/* ── 新闻标题+解读 ── */
-.topic-title-zh {
-  font-size: 1.2rem; font-weight: 700; color: var(--text-primary);
-  line-height: 1.4; letter-spacing: -0.01em; margin-bottom: 0.35rem;
-}
-.topic-explanation { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
-
-/* ── 分割线 ── */
-.card-divider { border: none; border-top: 1px solid var(--divider); margin: 1rem 0; }
-
-/* ── 广场（默认展开，核心区域）── */
-.plaza { }
-.comment-thread { margin-bottom: 0.9rem; }
-
-.comment-bubble {
-  background: var(--bg-bubble);
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.4rem;
-}
-.comment-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
-.persona-avatar {
-  width: 26px; height: 26px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
-}
-.avatar-middle_class { background: rgba(142,142,147,0.2); color: #8e8e93; }
-.avatar-kirchner     { background: rgba(255,69,58,0.15);  color: #ff453a; }
-.avatar-milei        { background: rgba(255,214,10,0.15); color: #b8940a; }
-.avatar-genz         { background: rgba(10,132,255,0.15); color: #0a84ff; }
-.avatar-middle_class_reply { background: rgba(142,142,147,0.15); color: #8e8e93; }
-.avatar-kirchner_reply     { background: rgba(255,69,58,0.12);   color: #ff453a; }
-.avatar-milei_reply        { background: rgba(255,214,10,0.12);  color: #b8940a; }
-.avatar-genz_reply         { background: rgba(10,132,255,0.12);  color: #0a84ff; }
-
-.comment-name { font-size: 0.72rem; font-weight: 600; color: var(--text-sub); }
-.comment-content { font-size: 0.875rem; color: var(--text-primary); line-height: 1.65; }
-
-.comment-reply-wrap {
-  margin-left: 1.8rem;
-  border-left: 2px solid var(--divider);
-  padding-left: 0.8rem;
-  margin-top: 0.3rem;
-}
-.comment-reply-bubble {
-  background: var(--bg-reply);
-  border-radius: 10px;
-  padding: 0.6rem 0.85rem;
-}
-
-/* ── 카드 하단: 업무 제안 + 접기 ── */
-.card-bottom { margin-top: 1rem; }
-.topic-impact {
-  font-size: 0.82rem; color: var(--text-primary); line-height: 1.5;
-  padding: 0.5rem 0.8rem;
-  background: var(--bg-impact);
-  border-radius: 7px; border-left: 2px solid var(--text-muted);
-  margin-bottom: 0.6rem;
-}
-.topic-impact::before { content: "→ "; color: var(--text-muted); }
-
-/* ── 折叠按钮 ── */
-.toggle-btn {
-  background: none; border: none; cursor: pointer;
-  font-size: 0.7rem; color: var(--text-faint); padding: 0;
-  margin-top: 0.5rem; display: inline-block;
+.nav-links a {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  letter-spacing: 0.01em;
   transition: color 0.15s;
 }
-.toggle-btn:hover { color: var(--text-sub); }
+.nav-links a:hover, .nav-links a.active { color: var(--ink); }
 
-/* ── 文化背景 ── */
-.cultural-text {
-  font-size: 0.82rem; color: var(--text-sub); line-height: 1.7;
-  margin-top: 0.5rem; padding: 0.75rem 1rem;
-  background: var(--bg-cultural);
-  border-radius: 8px; border-left: 2px solid var(--text-faint);
+/* ── Layout ── */
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 4rem 2rem 6rem;
 }
 
-.loading, .empty { text-align: center; padding: 6rem 0; color: var(--text-faint); font-size: 0.9rem; }
-footer { text-align: center; margin-top: 4rem; font-size: 0.72rem; color: var(--text-ghost); }
+/* ── Header ── */
+header.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--rule);
+}
+.header-date {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Topic Card ── */
+.topic-list { }
+
+.topic-card {
+  padding: 2.2rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.topic-card:first-child { padding-top: 0; }
+
+.card-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.6rem;
+}
+.card-mood-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 500;
+}
+.card-mood-tag.negative { color: #c0392b; }
+.card-mood-tag.positive { color: #27ae60; }
+.card-mood-tag.neutral  { color: var(--ink-faint); }
+
+.source-link {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  text-decoration: none;
+}
+.source-link:hover { color: var(--ink-sub); text-decoration: underline; }
+
+.topic-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.55rem;
+  color: var(--ink);
+}
+.topic-explanation {
+  font-size: 0.9rem;
+  color: var(--ink-sub);
+  line-height: 1.9;
+  margin-bottom: 1.6rem;
+}
+
+/* ── Plaza (评论区) ── */
+.plaza {
+  margin-bottom: 1.4rem;
+}
+.plaza-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.9rem;
+}
+.comment-thread {
+  margin-bottom: 0.8rem;
+}
+.comment-main, .comment-reply {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+.comment-reply {
+  margin-left: 2rem;
+  padding-left: 0.8rem;
+  border-left: 1px solid var(--rule);
+}
+.comment-persona {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ink-sub);
+  white-space: nowrap;
+  padding-top: 0.15rem;
+  min-width: 3.5rem;
+}
+.persona-middle_class { color: #555; }
+.persona-kirchner     { color: #c0392b; }
+.persona-milei        { color: #b7860b; }
+.persona-genz         { color: #2980b9; }
+.persona-middle_class_reply { color: #555; }
+.persona-kirchner_reply     { color: #c0392b; }
+.persona-milei_reply        { color: #b7860b; }
+.persona-genz_reply         { color: #2980b9; }
+
+.comment-text {
+  font-size: 0.88rem;
+  color: var(--ink-sub);
+  line-height: 1.75;
+}
+
+/* ── Business Impact ── */
+.topic-impact {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  line-height: 1.8;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rule);
+}
+.impact-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.3rem;
+}
+
+/* ── Cultural context toggle ── */
+.toggle-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.72rem; color: var(--ink-faint); padding: 0;
+  margin-top: 0.6rem; display: block;
+  transition: color 0.15s;
+}
+.toggle-btn:hover { color: var(--ink-sub); }
+.cultural-text {
+  font-size: 0.82rem; color: var(--ink-muted);
+  line-height: 1.8; margin-top: 0.5rem;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--rule);
+}
+
+/* ── Docs page ── */
+.docs-header {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--rule);
+}
+.docs-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+.docs-sub {
+  font-size: 1rem;
+  color: var(--ink-sub);
+  line-height: 1.7;
+}
+.docs-section { margin-bottom: 3rem; }
+.docs-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.docs-section p {
+  font-size: 0.92rem;
+  color: var(--ink-sub);
+  line-height: 1.9;
+  margin-bottom: 1rem;
+}
+.docs-section p strong { color: var(--ink); }
+.persona-card {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1rem;
+  background: #fff;
+}
+.persona-card-header {
+  display: flex; align-items: baseline; gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+.persona-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.persona-card-label {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+.persona-prompt {
+  font-size: 0.8rem;
+  font-family: "SF Mono", "Fira Code", monospace;
+  color: var(--ink-sub);
+  line-height: 1.7;
+  background: #f5f5f3;
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Misc ── */
+.loading, .empty {
+  text-align: center; padding: 6rem 0;
+  color: var(--ink-faint); font-size: 0.9rem;
+}
+footer.site-footer {
+  text-align: center;
+  padding: 3rem 0;
+  font-size: 0.72rem;
+  color: var(--ink-ghost);
+  border-top: 1px solid var(--rule);
+  margin-top: 2rem;
+}
