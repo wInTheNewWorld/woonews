@@ -299,3 +299,31 @@ footer.site-footer {
   border-top: 1px solid var(--rule);
   margin-top: 2rem;
 }
+
+/* 人物名跳转链接 */
+a.persona-link {
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+  cursor: pointer;
+}
+a.persona-link:hover { opacity: 0.75; }
+
+/* Docs 页人物折叠卡片 */
+.persona-card-collapsible {
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 0;
+}
+.persona-card-header-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 1.1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+.persona-card-identity { display: flex; flex-direction: column; gap: 0.2rem; }
+.persona-toggle-icon { font-size: 0.7rem; color: var(--ink-faint); flex-shrink: 0; }
+.persona-soul-content { padding-bottom: 1.2rem; }

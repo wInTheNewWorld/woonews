@@ -51,10 +51,22 @@ function formatDate(d: string, lang: string) {
     : `${y}年${+m}月${+day}日`;
 }
 
-function Plaza({ comments, t }: { comments: Comment[], t: Record<string, string> }) {
+const PERSONA_DOC_KEY: Record<string, string> = {
+  middle_class: 'carlos', genz: 'valentina', kirchner: 'maria',
+  milei: 'facundo', retiree: 'hector', immigrant: 'lucia',
+  informal: 'rodrigo', techie: 'tincho',
+};
+
+function personaDocKey(persona: string) {
+  const base = persona.replace('_reply', '');
+  return PERSONA_DOC_KEY[base] || base;
+}
+
+function Plaza({ comments, t, lang }: { comments: Comment[], t: Record<string, string>, lang: string }) {
   if (!comments.length) return null;
   const mains = comments.filter(c => !c.reply_to);
   const replies = comments.filter(c => c.reply_to);
+  const docsBase = lang === 'en' ? '/en/docs' : '/docs';
   return (
     <div className="plaza">
       <p className="plaza-label">{t.plaza}</p>
@@ -62,15 +74,27 @@ function Plaza({ comments, t }: { comments: Comment[], t: Record<string, string>
         const p = PERSONA[c.persona] || { short: c.persona };
         const reply = replies.find(r => r.reply_to === c.id);
         const rp = reply ? (PERSONA[reply.persona] || { short: reply.persona }) : null;
+        const docKey = personaDocKey(c.persona);
+        const replyDocKey = reply ? personaDocKey(reply.persona) : '';
         return (
           <div key={c.id} className="comment-thread">
             <div className="comment-main">
-              <span className={`comment-persona persona-${c.persona.replace('_reply','')}`}>{p.short}</span>
+              <a
+                href={`${docsBase}#${docKey}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`comment-persona persona-${c.persona.replace('_reply','')} persona-link`}
+              >{p.short}</a>
               <p className="comment-text">{c.content}</p>
             </div>
             {reply && rp && (
               <div className="comment-reply">
-                <span className={`comment-persona persona-${reply.persona.replace('_reply','')}`}>{rp.short}</span>
+                <a
+                  href={`${docsBase}#${replyDocKey}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`comment-persona persona-${reply.persona.replace('_reply','')} persona-link`}
+                >{rp.short}</a>
                 <p className="comment-text">{reply.content}</p>
               </div>
             )}
@@ -81,7 +105,7 @@ function Plaza({ comments, t }: { comments: Comment[], t: Record<string, string>
   );
 }
 
-function TopicCard({ topic, t }: { topic: Topic, t: Record<string, string> }) {
+function TopicCard({ topic, t, lang }: { topic: Topic, t: Record<string, string>, lang: string }) {
   const [showCultural, setShowCultural] = useState(false);
   const mood = topic.mood?.toLowerCase() || 'neutral';
   const moodLabel: Record<string, string> = {
@@ -99,7 +123,7 @@ function TopicCard({ topic, t }: { topic: Topic, t: Record<string, string> }) {
       </div>
       <h2 className="topic-title">{topic.title}</h2>
       <p className="topic-explanation">{topic.explanation}</p>
-      <Plaza comments={topic.persona_comments || []} t={t} />
+      <Plaza comments={topic.persona_comments || []} t={t} lang={lang} />
       {topic.cultural_context && (
         <>
           <button className="toggle-btn" onClick={() => setShowCultural(o => !o)}>
@@ -164,7 +188,7 @@ export function DailyPage({ lang }: { lang: 'zh' | 'en' }) {
           </div>
         </header>
         <div className="topic-list">
-          {data.topics.map(topic => <TopicCard key={topic.id} topic={topic} t={t} />)}
+          {data.topics.map(topic => <TopicCard key={topic.id} topic={topic} t={t} lang={lang} />)}
         </div>
         <footer className="site-footer">{t.footer}</footer>
       </div>
