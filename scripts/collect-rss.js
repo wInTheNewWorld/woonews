@@ -13,9 +13,10 @@ const parser = new Parser({
 const db = new Database(path.join(__dirname, '../db/woonews.db'));
 
 const SOURCES = [
-  { name: 'clarin', url: 'https://www.clarin.com/rss/lo-ultimo/' },
-  { name: 'lanacion', url: 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/' },
-  { name: 'infobae', url: 'https://www.infobae.com/feeds/rss/' }
+  // 媒体来源（RSS 可用的）
+  { name: 'clarin',    url: 'https://www.clarin.com/rss/lo-ultimo/',             weight: 3 },
+  { name: 'lanacion',  url: 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/', weight: 3 },
+  // infobae / pagina12 / ambito 均有反爬保护，通过 Twitter 信号间接覆盖
 ];
 
 const MAX_ITEMS = 20;
@@ -48,7 +49,7 @@ async function collectFeed(source) {
       const exists = checkExists.get(today, title);
       if (exists) continue;
 
-      insertSignal.run(uuidv4(), today, source.name, title, url, 50, now);
+      insertSignal.run(uuidv4(), today, source.name, title, url, source.weight * 10, now);
       inserted++;
     }
 
