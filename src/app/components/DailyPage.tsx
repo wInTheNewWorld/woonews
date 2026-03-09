@@ -63,13 +63,17 @@ function personaDocKey(persona: string) {
 }
 
 function Plaza({ comments, t, lang }: { comments: Comment[], t: Record<string, string>, lang: string }) {
+  const [open, setOpen] = useState(false);
   if (!comments.length) return null;
   const mains = comments.filter(c => !c.reply_to);
   const replies = comments.filter(c => c.reply_to);
   const docsBase = lang === 'en' ? '/en/docs' : '/docs';
   return (
     <div className="plaza">
-      <p className="plaza-label">{t.plaza}</p>
+      <button className="toggle-btn" onClick={() => setOpen(o => !o)}>
+        {t.plaza} {open ? '↑' : '↓'}
+      </button>
+      {!open ? null : <>
       {mains.map(c => {
         const p = PERSONA[c.persona] || { short: c.persona };
         const reply = replies.find(r => r.reply_to === c.id);
@@ -97,6 +101,7 @@ function Plaza({ comments, t, lang }: { comments: Comment[], t: Record<string, s
           </div>
         );
       })}
+      </>}
     </div>
   );
 }
