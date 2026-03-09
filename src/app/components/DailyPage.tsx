@@ -108,14 +108,22 @@ function Plaza({ comments, t, lang }: { comments: Comment[], t: Record<string, s
 
 function TopicCard({ topic, t, lang }: { topic: Topic, t: Record<string, string>, lang: string }) {
   const [showCultural, setShowCultural] = useState(false);
-  const mood = topic.mood?.toLowerCase() || 'neutral';
+  const mood = topic.mood || 'neutral';
   const moodLabel: Record<string, string> = {
-    negative: t.moodNeg, positive: t.moodPos, neutral: t.moodNeu
+    // 新标签
+    '争议': t.moodNeg || '争议', '民怨': '民怨', '担忧': '担忧',
+    '讽刺': '讽刺', '政治对立': '政治对立', '共情': '共情', '中性': t.moodNeu || '中性',
+    // 英文版
+    'controversial': 'Controversial', 'discontent': 'Discontent',
+    'concern': 'Concern', 'satire': 'Satire', 'political divide': 'Political Divide',
+    'solidarity': 'Solidarity', 'neutral': t.moodNeu || 'Neutral',
+    // 旧标签兼容
+    'negative': t.moodNeg || 'Negative', 'positive': t.moodPos || 'Positive',
   };
   return (
     <article className="topic-card">
       <div className="card-meta-row">
-        <span className={`card-mood-tag ${mood}`}>{moodLabel[mood] || mood}</span>
+        <span className={`card-mood-tag mood-tag`}>{moodLabel[mood] || mood}</span>
         {topic.links?.[0] && (
           <a href={topic.links[0]} target="_blank" rel="noopener noreferrer" className="source-link">
             {t.source}

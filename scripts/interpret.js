@@ -37,7 +37,33 @@ async function main() {
   const topics = db.prepare(`SELECT * FROM topics WHERE date = ? AND (title_zh IS NULL OR title_zh = '')`).all(TODAY);
   console.log(`📋 待解读话题：${topics.length} 条`);
 
+  // 过滤不相关话题
+  const relevant = [];
   for (const topic of topics) {
+    const checkPrompt = `你是阿根廷本地媒体编辑，负责筛选真正值得关注的本地议题。
+
+请判断以下内容是否满足全部条件：
+1. 事件/话题发生在阿根廷境内，或直接、显著影响阿根廷本地生活
+2. 反映真实的民间议题或社会情绪，而不仅仅是官方声明或政府公告的转发
+3. 信源来自阿根廷本地（不是其他国家用户谈论阿根廷）
+4. 话题本身不是纯粹的景色/旅游观光内容（没有实质社会意义）
+
+内容：${topic.title_es}
+
+只回答 YES 或 NO，不要解释。`;
+
+    const check = callClaude(checkPrompt);
+    if (!check || check.trim().toUpperCase().startsWith('NO')) {
+      console.log(`⏭️  过滤：${topic.title_es.slice(0, 60)}`);
+      db.prepare('DELETE FROM topics WHERE id = ?').run(topic.id);
+      continue;
+    }
+    relevant.push(topic);
+  }
+
+  console.log(`\n✅ 通过筛选：${relevant.length} 条（过滤掉 ${topics.length - relevant.length} 条）\n`);
+
+  for (const topic of relevant) {
     console.log(`\n🔍 解读：${topic.title_es}`);
 
     const prompt = `你是一位深度了解阿根廷的分析师，同时精通中文和英文。
@@ -53,7 +79,7 @@ TITLE_ZH:::15字以内的中文标题，简洁有力
 TITLE_EN:::English title, max 10 words, punchy
 EXPLANATION_ZH:::一句话中文解读，说清楚发生了什么，60字以内
 EXPLANATION_EN:::One sentence English explanation, max 50 words, what happened and why it matters
-MOOD:::只能是 positive、negative 或 neutral 之一
+MOOD:::从以下选一个最贴切的情绪类型：争议 / 民怨 / 担忧 / 讽刺 / 政治对立 / 共情 / 中性
 HEAT:::只能是 High、Medium 或 Low 之一
 CULTURAL_CONTEXT_ZH:::50-80字，解释这件事在阿根廷文化语境下为什么重要
 CULTURAL_CONTEXT_EN:::50-80 words, explain why this matters in Argentine cultural context`;

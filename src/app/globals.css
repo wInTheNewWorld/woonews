@@ -355,3 +355,11 @@ a.lang-switch:hover {
 }
 .logo-woo  { color: #E8A800; }
 .logo-news { color: #111111; }
+
+/* mood tag 统一样式（新情绪类型） */
+.mood-tag {
+  color: var(--ink-muted);
+  background: none;
+  border: none;
+  padding: 0;
+}

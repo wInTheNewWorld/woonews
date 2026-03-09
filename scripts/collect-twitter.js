@@ -5,7 +5,16 @@ const https = require('https');
 const db = new Database('db/woonews.db');
 const today = new Date().toISOString().split('T')[0];
 const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiQWFIZjNQTUtrQVR2WEVRR1VENXNvNTFoQ1pDR3VDSkNGY1B3aTZIdFNDWXciLCJub25jZSI6IjAxMWQ3YTU2LTUxMGMtNDliMC05ZDc4LTYxZmJiNzBmM2M3NCIsImlhdCI6MTc3MjIwNTg2NiwianRpIjoiY2Q2ODIzZjAtOTAwOC00YjdhLTliNzMtNjRjMzMzNzE4NTJiIn0.TS14kIaF5sJyubqqKfSwv5yqbBxBdemuBx9DCeb8AEw';
-const KEYWORDS = ['Argentina economia', 'Buenos Aires', 'Milei dolar', 'Argentina inflacion'];
+const KEYWORDS = [
+  'Argentina protesta',       // 社会抗议
+  'Argentina inflacion',      // 通胀民生
+  'Milei Argentina',          // 执政相关
+  'Argentina crisis',         // 危机情绪
+  'paro Argentina',           // 罢工/停工
+  'Argentina corrupcion',     // 腐败议题
+  'dolar blue Argentina',     // 汇率民间情绪
+  'Argentina seguridad',      // 治安
+];
 
 function cleanText(text) {
   return text
@@ -44,7 +53,7 @@ async function collect() {
 
   for (const kw of KEYWORDS) {
     try {
-      const res = await post6551({ keywords: kw, maxResults: 10, product: 'Top' });
+      const res = await post6551({ keywords: kw, maxResults: 10, product: 'Top', lang: 'es' });
       const tweets = res?.data || [];
       let count = 0;
       for (const t of tweets) {
