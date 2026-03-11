@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const db = new Database(path.join(__dirname, '../db/woonews.db'));
-const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY = new Date(Date.now() + 8*3600*1000).toISOString().split('T')[0];
 const CLAUDE = '/Users/aiwoody/.nvm/versions/node/v22.19.0/bin/claude';
 
 function callClaude(prompt) {

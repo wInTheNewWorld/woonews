@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
 const db = new Database(path.join(__dirname, '../db/woonews.db'));
-const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY = new Date(Date.now() + 8*3600*1000).toISOString().split('T')[0];
 
 const SUBREDDITS = ['argentina', 'merval'];
 const MAX_POSTS = 25;

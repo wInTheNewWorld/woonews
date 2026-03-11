@@ -34,7 +34,7 @@ async function collectFeed(source) {
   console.log(`Fetching ${source.name}...`);
   try {
     const feed = await parser.parseURL(source.url);
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Date(Date.now() + 8*3600*1000).toISOString().split('T')[0];
     const now = new Date().toISOString();
 
     let inserted = 0;

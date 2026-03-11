@@ -13,7 +13,7 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
 const db = new Database(path.join(__dirname, '../db/woonews.db'));
-const TODAY = new Date().toISOString().split('T')[0];
+const TODAY = new Date(Date.now() + 8*3600*1000).toISOString().split('T')[0];
 
 // 经济话题关键词——命中这些词的话题会被限流
 const ECON_KEYWORDS = [

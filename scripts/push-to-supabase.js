@@ -7,7 +7,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wolktxrncwskkimgouwc.s
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const db = new Database(path.join(__dirname, '../db/woonews.db'));
 
-const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY = new Date(Date.now() + 8*3600*1000).toISOString().split('T')[0];
 
 async function req(method, endpoint, body) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {

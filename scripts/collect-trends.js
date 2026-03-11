@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const https = require('https');
 
 const db = new Database('db/woonews.db');
-const today = new Date().toISOString().split('T')[0];
+const today = new Date(Date.now() + 8*3600*1000).toISOString().split('T')[0];
 
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
